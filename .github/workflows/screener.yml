@@ -24,11 +24,16 @@ jobs:
 
       - name: 运行筛选
         run: |
-          python a_share_screener.py | tee output.txt
+          set -o pipefail   # 脚本出错时让这一步失败，而不是被 tee 吞掉
+          python -u a_share_screener.py 2>&1 | grep -v '%|' | tee output.txt
+
+      - name: 写入 Summary
+        if: always()
+        run: |
           {
             echo '## 筛选结果'
             echo '```'
-            cat output.txt
+            cat output.txt 2>/dev/null || echo '没有输出'
             echo '```'
           } >> "$GITHUB_STEP_SUMMARY"
 
