@@ -15,3 +15,7 @@ python a_share_screener.py
 结果输出到终端，并保存为 `候选清单.csv`。参数在脚本开头可调。
 
 输出仅为研究候选，不构成投资建议。
+
+## 在 GitHub 上运行
+
+仓库 Actions 页面 → "A股初筛" → Run workflow。运行结果显示在运行详情页的 Summary 中，`候选清单.csv` 可在 Artifacts 中下载。工作日北京时间 16:00 也会自动运行一次。

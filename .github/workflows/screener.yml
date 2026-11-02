@@ -1,0 +1,43 @@
+name: A股初筛
+
+on:
+  workflow_dispatch:        # 在 Actions 页面手动点击运行
+  schedule:
+    - cron: "0 8 * * 1-5"   # 工作日 UTC 08:00（北京时间 16:00，收盘后）
+
+permissions:
+  contents: read
+
+jobs:
+  screen:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: 安装依赖
+        run: pip install akshare pandas
+
+      - name: 运行筛选
+        run: |
+          python a_share_screener.py | tee output.txt
+          {
+            echo '## 筛选结果'
+            echo '```'
+            cat output.txt
+            echo '```'
+          } >> "$GITHUB_STEP_SUMMARY"
+
+      - name: 上传结果
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: screener-result
+          path: |
+            候选清单.csv
+            output.txt
+          if-no-files-found: warn
